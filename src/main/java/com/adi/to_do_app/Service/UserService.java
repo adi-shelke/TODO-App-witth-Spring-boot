@@ -21,4 +21,11 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
+    public MyUser findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+    public MyUser findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }
