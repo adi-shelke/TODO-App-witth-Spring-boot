@@ -5,7 +5,10 @@ import com.adi.to_do_app.model.Note;
 import com.adi.to_do_app.model.NotesDTO;
 import com.adi.to_do_app.repo.NotesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class NotesService {
@@ -23,5 +26,12 @@ public class NotesService {
                 savedNote.getTag(),
                 savedNote.getDate()
         );
+    }
+
+    public List<NotesDTO> getNotes(MyUser user){
+        if(user==null){
+            throw new UsernameNotFoundException("User 404");
+        }
+        return notesRepository.findByUser(user);
     }
 }
