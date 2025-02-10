@@ -51,7 +51,7 @@ public class NotesService {
         Optional<Note> note = notesRepository.findById(noteId);
 
         if (note.isEmpty()) {
-            return ResponseEntity.badRequest().body("Note not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Note not found");
         }
 
         if (!Objects.equals(note.get().getUser().getId(), user.getId())) {
@@ -60,5 +60,37 @@ public class NotesService {
 
         notesRepository.deleteById(noteId);
         return ResponseEntity.ok("Note Deleted Successfully");
+    }
+
+    public ResponseEntity<NotesDTO> updateNoteById(String id, Note note, MyUser user) {
+        Long noteId;
+        try{
+            noteId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<Note> existingNote = notesRepository.findById(noteId);
+        if (existingNote.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(!Objects.equals(existingNote.get().getUser().getId(), user.getId())){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Note updatedNote = existingNote.get();
+        updatedNote.setTitle(note.getTitle());
+        updatedNote.setDescription(note.getDescription());
+        updatedNote.setTag(note.getTag());
+        Note savedNote = notesRepository.save(updatedNote);
+
+        NotesDTO updatedNoteDTO = new NotesDTO(savedNote.getId(),
+                savedNote.getUser().getId(),
+                savedNote.getTitle(),
+                savedNote.getDescription(),
+                savedNote.getTag(),
+                savedNote.getDate()
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(updatedNoteDTO);
     }
 }

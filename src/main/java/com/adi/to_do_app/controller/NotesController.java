@@ -38,4 +38,11 @@ public class NotesController {
         MyUser user = userService.findByUsername(userDetails.getUsername());
         return notesService.deleteNoteById(id, user);
     }
+
+    @PutMapping("/updatenote/{id}")
+    public ResponseEntity<NotesDTO> updateNote(@PathVariable String id, @RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails){
+        MyUser user = userService.findByUsername(userDetails.getUsername());
+        return notesService.updateNoteById(id, note, user);
+    }
 }
+
