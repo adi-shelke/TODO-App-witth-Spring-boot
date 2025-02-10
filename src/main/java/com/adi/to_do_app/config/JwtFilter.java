@@ -2,6 +2,7 @@ package com.adi.to_do_app.config;
 
 import com.adi.to_do_app.Service.JwtService;
 import com.adi.to_do_app.Service.MyUserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String userName = null;
+
+        try{
         if(authHeader != null && authHeader.startsWith("Bearer ")){
             token = authHeader.substring(7);
             userName = jwtService.extractUserName(token);
@@ -41,5 +44,13 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request,response);
+        }catch (ExpiredJwtException e){
+            handleExpiredJwtException(response);
+        }
+    }
+    private void handleExpiredJwtException(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"JWT_EXPIRED\", \"message\": \"Token has expired. Please login again.\"}");
     }
 }
