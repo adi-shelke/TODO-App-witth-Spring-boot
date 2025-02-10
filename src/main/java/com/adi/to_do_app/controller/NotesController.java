@@ -5,6 +5,7 @@ import com.adi.to_do_app.model.MyUser;
 import com.adi.to_do_app.model.Note;
 import com.adi.to_do_app.model.NotesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,8 @@ public class NotesController {
     }
 
     @DeleteMapping("/deletenote/{id}")
-    public void deleteNote(@PathVariable String id){
-        notesService.deleteNoteById(id);
+    public ResponseEntity<String> deleteNote(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails){
+        MyUser user = userService.findByUsername(userDetails.getUsername());
+        return notesService.deleteNoteById(id, user);
     }
 }

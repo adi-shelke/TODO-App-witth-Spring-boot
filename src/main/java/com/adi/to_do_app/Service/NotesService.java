@@ -5,11 +5,15 @@ import com.adi.to_do_app.model.Note;
 import com.adi.to_do_app.model.NotesDTO;
 import com.adi.to_do_app.repo.NotesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class NotesService {
@@ -36,13 +40,25 @@ public class NotesService {
         return notesRepository.findByUser(user);
     }
 
-    public ResponseEntity<String> deleteNoteById(String id){
-        try{
-            Long noteId = Long.parseLong(id);
-            notesRepository.deleteById(noteId);
-            return ResponseEntity.ok("Note deleted successfully");
-        }catch (NumberFormatException e){
-            return ResponseEntity.badRequest().body("Invalid note id");
+    public ResponseEntity<String> deleteNoteById(String id, MyUser user) {
+        Long noteId;
+        try {
+            noteId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Invalid note ID format");
         }
+
+        Optional<Note> note = notesRepository.findById(noteId);
+
+        if (note.isEmpty()) {
+            return ResponseEntity.badRequest().body("Note not found");
+        }
+
+        if (!Objects.equals(note.get().getUser().getId(), user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to delete this note");
+        }
+
+        notesRepository.deleteById(noteId);
+        return ResponseEntity.ok("Note Deleted Successfully");
     }
 }
