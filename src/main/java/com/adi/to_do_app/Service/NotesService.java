@@ -5,6 +5,7 @@ import com.adi.to_do_app.model.Note;
 import com.adi.to_do_app.model.NotesDTO;
 import com.adi.to_do_app.repo.NotesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -33,5 +34,15 @@ public class NotesService {
             throw new UsernameNotFoundException("User 404");
         }
         return notesRepository.findByUser(user);
+    }
+
+    public ResponseEntity<String> deleteNoteById(String id){
+        try{
+            Long noteId = Long.parseLong(id);
+            notesRepository.deleteById(noteId);
+            return ResponseEntity.ok("Note deleted successfully");
+        }catch (NumberFormatException e){
+            return ResponseEntity.badRequest().body("Invalid note id");
+        }
     }
 }

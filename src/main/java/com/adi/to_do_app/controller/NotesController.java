@@ -31,4 +31,9 @@ public class NotesController {
         MyUser user = userService.findByUsername(userDetails.getUsername());
         return notesService.getNotes(user);
     }
+
+    @DeleteMapping("/deletenote/{id}")
+    public void deleteNote(@PathVariable String id){
+        notesService.deleteNoteById(id);
+    }
 }
