@@ -12,7 +12,8 @@ public class NotesDTO {
     private String title;
     private String description;
     private String tag;
-    private LocalDateTime date;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 
 }

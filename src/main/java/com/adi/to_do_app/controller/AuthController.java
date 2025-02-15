@@ -9,16 +9,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 //@CrossOrigin(origins = "*")
+@RequestMapping("/auth/")
 public class AuthController {
 
     @Autowired
@@ -26,8 +24,17 @@ public class AuthController {
 
 
     @PostMapping("register")
-    public MyUser register(@RequestBody MyUser user){
-        return userService.register(user);
+    public ResponseEntity<Map<String, Object>> register(@RequestBody MyUser user){
+            Map<String, Object> response = new HashMap<>();
+            try{
+                MyUser newUser = userService.register(user);
+                response.put("message","User registered successfully");
+                response.put("user",newUser);
+                return ResponseEntity.ok(response);
+            }catch (IllegalArgumentException e){
+                response.put("message",e.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
     }
 
 
@@ -44,22 +51,18 @@ public class AuthController {
 
         MyUser existingUser = userService.findByEmail(user.getEmail());
         if (existingUser == null || !new BCryptPasswordEncoder(12).matches(user.getPassword(), existingUser.getPassword())) {
-            response.put("success", false);
             response.put("message", "Invalid credentials");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(existingUser.getUsername(), user.getPassword()));
         if(authentication.isAuthenticated()){
             String token = jwtService.generateToken(existingUser.getUsername());
-            response.put("success",true);
             response.put("authtoken",token);
             return ResponseEntity.ok(response);
         }
         else{
-            response.put("success",false);
-            response.put("message","Login Failed");
+            response.put("message","Invalid credentials");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }

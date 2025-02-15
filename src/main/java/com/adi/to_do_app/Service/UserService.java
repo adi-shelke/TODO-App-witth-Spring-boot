@@ -17,6 +17,16 @@ public class UserService {
 
     public MyUser register(MyUser user){
 
+        MyUser existingEmailUser = userRepository.findByEmail(user.getEmail());
+        MyUser existingUsernameUser = userRepository.findByUsername(user.getUsername());
+        if (existingEmailUser != null) {
+            throw new IllegalArgumentException("EMAIL_ALREADY_EXISTS");
+        }
+
+        // Check if username already exists
+        if (existingUsernameUser!= null) {
+            throw new IllegalArgumentException("USERNAME_ALREADY_EXISTS");
+        }
         // Encode the password before saving it to the database.
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);

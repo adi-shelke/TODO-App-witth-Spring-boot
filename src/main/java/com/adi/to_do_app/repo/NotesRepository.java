@@ -13,6 +13,6 @@ import java.util.List;
 @Repository
 public interface NotesRepository extends JpaRepository<Note, Long> {
 
-    @Query("SELECT new com.adi.to_do_app.model.NotesDTO(n.id, n.user.id, n.title, n.description, n.tag, n.date) FROM Note n WHERE n.user = :user")
+    @Query("SELECT new com.adi.to_do_app.model.NotesDTO(n.id, n.user.id, n.title, n.description, n.tag, n.createdAt, n.updatedAt) FROM Note n WHERE n.user = :user")
     List<NotesDTO> findByUser(MyUser user);
 }

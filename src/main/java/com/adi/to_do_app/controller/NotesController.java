@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/notes")
 public class NotesController {
     @Autowired
     private NotesService notesService;
@@ -21,25 +20,25 @@ public class NotesController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("addnote")
-    public NotesDTO addNote(@RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails){
-        MyUser user = userService.findByUsername(userDetails.getUsername());
-        return notesService.addNote(note, user);
-    }
-
-    @GetMapping("fetchallnotes")
+    @GetMapping("notes")
     public List<NotesDTO> getNotes (@AuthenticationPrincipal UserDetails userDetails){
         MyUser user = userService.findByUsername(userDetails.getUsername());
         return notesService.getNotes(user);
     }
 
-    @DeleteMapping("/deletenote/{id}")
+    @PostMapping("notes")
+    public NotesDTO addNote(@RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails){
+        MyUser user = userService.findByUsername(userDetails.getUsername());
+        return notesService.addNote(note, user);
+    }
+
+    @DeleteMapping("/notes/{id}")
     public ResponseEntity<String> deleteNote(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails){
         MyUser user = userService.findByUsername(userDetails.getUsername());
         return notesService.deleteNoteById(id, user);
     }
 
-    @PutMapping("/updatenote/{id}")
+    @PutMapping("/notes/{id}")
     public ResponseEntity<NotesDTO> updateNote(@PathVariable String id, @RequestBody Note note, @AuthenticationPrincipal UserDetails userDetails){
         MyUser user = userService.findByUsername(userDetails.getUsername());
         return notesService.updateNoteById(id, note, user);

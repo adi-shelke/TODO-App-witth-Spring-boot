@@ -29,7 +29,8 @@ public class NotesService {
                 savedNote.getTitle(),
                 savedNote.getDescription(),
                 savedNote.getTag(),
-                savedNote.getDate()
+                savedNote.getCreatedAt(),
+                savedNote.getUpdatedAt()
         );
     }
 
@@ -89,7 +90,8 @@ public class NotesService {
                 savedNote.getTitle(),
                 savedNote.getDescription(),
                 savedNote.getTag(),
-                savedNote.getDate()
+                savedNote.getCreatedAt(),
+                savedNote.getUpdatedAt()
         );
         return ResponseEntity.status(HttpStatus.OK).body(updatedNoteDTO);
     }
